@@ -29,6 +29,20 @@ local HYPER_REGIONS = {
     { row_start = 6, row_end = 8, col_start = 6, col_end = 8 },
 }
 
+-- Cell-list form of HYPER_REGIONS, passed to the shared generator so that
+-- generated solutions actually satisfy the hyper-box "no duplicate" rule
+-- (the generator only enforces row/col/3x3-box constraints on its own).
+local HYPER_EXTRA_REGIONS = {}
+for _, region in ipairs(HYPER_REGIONS) do
+    local cells = {}
+    for r = region.row_start, region.row_end do
+        for c = region.col_start, region.col_end do
+            cells[#cells + 1] = { r = r, c = c }
+        end
+    end
+    HYPER_EXTRA_REGIONS[#HYPER_EXTRA_REGIONS + 1] = cells
+end
+
 local HyperSudokuBoard = setmetatable({}, { __index = BaseBoard })
 HyperSudokuBoard.__index = HyperSudokuBoard
 
@@ -135,8 +149,8 @@ end
 function HyperSudokuBoard:generate(difficulty)
     self.difficulty = difficulty or self.difficulty or DEFAULT_DIFFICULTY
     local n, box_rows, box_cols = self.n, self.box_rows, self.box_cols
-    local solution = generateSolvedBoard(n, box_rows, box_cols)
-    local puzzle   = createPuzzle(solution, self.difficulty, n, box_rows, box_cols)
+    local solution = generateSolvedBoard(n, box_rows, box_cols, HYPER_EXTRA_REGIONS)
+    local puzzle   = createPuzzle(solution, self.difficulty, n, box_rows, box_cols, HYPER_EXTRA_REGIONS)
     self.puzzle          = puzzle
     self.solution        = solution
     self.user            = emptyGrid(n)
