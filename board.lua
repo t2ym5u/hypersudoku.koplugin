@@ -146,11 +146,11 @@ function HyperSudokuBoard:load(state)
     return true
 end
 
-function HyperSudokuBoard:generate(difficulty)
+function HyperSudokuBoard:generate(difficulty, on_progress)
     self.difficulty = difficulty or self.difficulty or DEFAULT_DIFFICULTY
     local n, box_rows, box_cols = self.n, self.box_rows, self.box_cols
     local solution = generateSolvedBoard(n, box_rows, box_cols, HYPER_EXTRA_REGIONS)
-    local puzzle   = createPuzzle(solution, self.difficulty, n, box_rows, box_cols, HYPER_EXTRA_REGIONS)
+    local puzzle   = createPuzzle(solution, self.difficulty, n, box_rows, box_cols, HYPER_EXTRA_REGIONS, on_progress)
     self.puzzle          = puzzle
     self.solution        = solution
     self.user            = emptyGrid(n)
